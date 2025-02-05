@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>لعبة البصمة الرقمية</title>
+    <style>
+      body {
+        background-color: rgb(17, 17, 17); /* لون الخلفية */
+        color: rgb(255, 255, 255); /* لون النص */
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+        flex-direction: column;
+      }
+
+      .container {
+        width: 800px;
+        height: 600px;
+        background: rgb(34, 34, 34); /* لون الخلفية داخل الحاوية */
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgb(57, 255, 20); /* ظل أخضر */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        text-align: right;
+        color: rgb(57, 255, 20); /* اللون الأخضر للمحتوى */
+      }
+
+      .question {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        width: 100%;
+      }
+
+      .option {
+        padding: 15px;
+        background: rgb(51, 51, 51); /* لون خلفية الأزرار */
+        border: 2px solid rgb(57, 255, 20); /* إطار أخضر */
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.2s ease;
+        font-size: 1.2em;
+      }
+
+      .option:hover {
+        background: rgb(57, 255, 20); /* اللون الأخضر عند التمرير */
+        color: rgb(17, 17, 17); /* اللون الأسود للنص عند التمرير */
+        transform: scale(1.05);
+      }
+
+      .score-board {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 200px;
+        height: 60px;
+        background: rgb(34, 34, 34); /* الخلفية داخل شريط النقاط */
+        border: 3px solid rgb(57, 255, 20); /* إطار أخضر */
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        gap: 10px;
+        box-shadow: 0 0 10px rgb(57, 255, 20); /* ظل أخضر */
+      }
+
+      .score-board .icon {
+        font-size: 2em;
+        color: rgb(57, 255, 20); /* لون الأيقونة */
+      }
+
+      .score-board span {
+        font-size: 1.2em;
+        color: rgb(57, 255, 20); /* اللون الأخضر للنقاط */
+      }
+
+      .feedback {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgb(34, 34, 34);
+        padding: 10px 20px;
+        border: 3px solid rgb(57, 255, 20);
+        border-radius: 10px;
+        color: rgb(255, 255, 255); /* النص باللون الأبيض */
+        font-size: 1.2em;
+        text-align: center;
+        display: none;
+      }
+
+      .correct-feedback {
+        background: rgb(40, 167, 69); /* الأخضر الناجح */
+      }
+
+      .incorrect-feedback {
+        background: rgb(220, 53, 69); /* اللون الأحمر للإجابة الخاطئة */
+      }
+
+      .timer {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgb(34, 34, 34);
+        border: 3px solid rgb(57, 255, 20);
+        border-radius: 10px;
+        padding: 15px;
+        font-size: 2em;
+        color: rgb(57, 255, 20); /* اللون الأخضر للعد التنازلي */
+        box-shadow: 0 0 10px rgb(57, 255, 20); /* ظل أخضر */
+      }
+
+      .hearts {
+        font-size: 1.5em;
+        color: rgb(255, 64, 64); /* اللون الأحمر لقلوب الحياة */
+        margin-bottom: 20px;
+      }
+
+      .completion-message {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgb(40, 167, 69); /* أخضر فاتح لرسالة الإكمال */
+        padding: 10px 20px;
+        border: 3px solid rgb(57, 255, 20);
+        border-radius: 10px;
+        color: rgb(255, 255, 255); /* النص باللون الأبيض */
+        font-size: 1.2em;
+        text-align: center;
+        display: none;
+      }
+
+      @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+      .option {
+    padding: 15px;
+    background: rgb(51, 51, 51); /* لون خلفية الأزرار */
+    border: 2px solid rgb(57, 255, 20); /* إطار أخضر */
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-size: 1.2em;
+  }
+
+  .option:hover {
+    background: rgb(57, 255, 20); /* اللون الأخضر عند التمرير */
+    color: rgb(17, 17, 17); /* اللون الأسود للنص عند التمرير */
+    transform: scale(1.05);
+  }
+
+  .correct-feedback {
+    background: rgb(40, 167, 69); /* الأخضر الناجح */
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 1.2em;
+  }
+
+  .incorrect-feedback {
+    background: rgb(220, 53, 69); /* الأحمر للإجابة الخاطئة */
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 1.2em;
+  }
+
+  /* تصميم الأزرار الخاصة بإعادة اللعبة أو إيقافها */
+  .restart-button, .stop-button {
+    background-color: rgb(220, 53, 69);
+    color: white;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 1.5em;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+  }
+
+  .restart-button:hover, .stop-button:hover {
+    background-color: rgb(40, 167, 69);
+    transform: scale(1.05);
+  }
+
+  .stop-button {
+    background-color: rgb(255, 64, 64);
+  }
+    </style>
+  </head>
+  <body>
+    <h1>لعبة البصمة الرقمية</h1>
+
+    <div class="hearts">
+      ❤️❤️❤️
+    </div>
+
+    <div class="score-board">
+      <div class="icon">⭐</div>
+      <span>النقاط: 0</span>
+    </div>
+
+    <div class="timer" id="timer">20</div>
+
+    <div class="container">
+      <div class="question"></div>
+      <div class="options"></div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="completion-message" id="completionMessage"></div>
+
+    <script>
+      let score = 0;
+      let timer = 20;
+      let hearts = 3;
+      let interval;
+      let currentQuestionIndex = 0;
+
+      const scoreBoard = document.querySelector('.score-board span');
+      const questionElement = document.querySelector('.question');
+      const optionsContainer = document.querySelector('.options');
+      const feedback = document.getElementById('feedback');
+      const timerElement = document.getElementById('timer');
+      const heartsElement = document.querySelector('.hearts');
+      const completionMessage = document.getElementById('completionMessage');
+
+      const questions = [
+        { question: "ما هي البصمة الرقمية؟", options: [{ text: "هي الأثر الذي تتركه أثناء استخدامك للإنترنت", correct: true }, { text: "هي بصمة إصبعك عند استخدام الهاتف", correct: false }, { text: "هي نوع من أنواع التكنولوجيا", correct: false }, { text: "لا شيء مما سبق", correct: false }] },
+        { question: "كيف يمكنك حماية البصمة الرقمية؟", options: [{ text: "مشاركة بياناتك مع الجميع", correct: false }, { text: "استخدام كلمات مرور قوية", correct: true }, { text: "فتح جميع الروابط المرسلة إليك", correct: false }, { text: "نشر جميع معلوماتك الشخصية", correct: false }] },
+        { question: "ماذا تعني كلمة 'التتبع الرقمي'؟", options: [{ text: "متابعة نشاطاتك الرقمية عبر الإنترنت", correct: true }, { text: "جمع بياناتك لتسجيل الدخول", correct: false }, { text: "التسجيل في منصات جديدة", correct: false }, { text: "حماية خصوصيتك", correct: false }] },
+        { question: "ما هو أحد مخاطر البصمة الرقمية؟", options: [{ text: "استخدامها في الإعلانات الموجهة", correct: true }, { text: "حمايتك من الفيروسات", correct: false }, { text: "تسريع الإنترنت", correct: false }, { text: "زيادة الخصوصية", correct: false }] },
+        { question: "ما هي وسيلة لحماية بياناتك الشخصية؟", options: [{ text: "استخدام VPN", correct: true }, { text: "مشاركة كلمات المرور", correct: false }, { text: "فتح جميع الرسائل المجهولة", correct: false }, { text: "تعطيل جدار الحماية", correct: false }] },
+        { question: "لماذا تُعتبر البصمة الرقمية مهمة؟", options: [{ text: "لتحديد هويتك الرقمية", correct: true }, { text: "لتسجيل نشاطك فقط", correct: false }, { text: "لحفظ بياناتك", correct: false }, { text: "للتفاعل مع الآخرين", correct: false }] }
+      ];
+
+      function loadQuestion() {
+        timer = 20;
+        timerElement.textContent = timer;
+        clearInterval(interval);
+        startTimer();
+
+        const question = questions[currentQuestionIndex];
+        questionElement.textContent = question.question;
+        optionsContainer.innerHTML = '';
+        question.options.forEach(option => {
+          const optionElement = document.createElement('div');
+          optionElement.classList.add('option');
+          optionElement.textContent = option.text;
+          optionElement.onclick = () => handleAnswer(option);
+          optionsContainer.appendChild(optionElement);
+        });
+      }
+
+      function handleAnswer(option) {
+        const correct = option.correct;
+        if (correct) {
+          score++;
+          scoreBoard.textContent = `النقاط: ${score}`;
+          feedback.textContent = 'إجابة صحيحة!';
+          feedback.classList.add('correct-feedback');
+          feedback.classList.remove('incorrect-feedback');
+        } else {
+          hearts--;
+          heartsElement.innerHTML = '❤️'.repeat(hearts);
+          feedback.textContent = 'إجابة خاطئة!';
+          feedback.classList.add('incorrect-feedback');
+          feedback.classList.remove('correct-feedback');
+        }
+
+        feedback.style.display = 'block';
+        setTimeout(() => {
+          feedback.style.display = 'none';
+        }, 1000);
+
+        currentQuestionIndex++;
+        if (currentQuestionIndex >= questions.length || hearts <= 0) {
+          showCompletionMessage();
+        } else {
+          loadQuestion();
+        }
+      }
+
+      function startTimer() {
+        interval = setInterval(() => {
+          timer--;
+          timerElement.textContent = timer;
+          if (timer <= 0) {
+            clearInterval(interval);
+            handleAnswer({ correct: false });
+          }
+        }, 1000);
+      }
+
+      function showCompletionMessage() {
+        completionMessage.textContent = `لقد أكملت اللعبة! نقاطك النهائية: ${score}`;
+        if (score >= 4) {
+          completionMessage.textContent += `\nأنت الآن تعرف أهمية البصمة الرقمية!`;
+        } else {
+          completionMessage.textContent += `\nتذكر دائمًا حماية بصمتك الرقمية!`;
+        }
+        completionMessage.style.display = "block";
+      }
+
+      loadQuestion();
+    </script>
+  </body>
+</html>
