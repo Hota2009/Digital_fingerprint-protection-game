@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>لعبة البصمة الرقمية</title>
+    <style>
+      body {
+        background-color: #111;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        overflow: hidden;
+        flex-direction: column;
+        width: 600px;
+        height: 800px;
+      }
+
+      h1 {
+        text-align: right;
+        color: rgb(57, 255, 20); /* RGB for neon green */
+        font-size: 2.5em;
+        margin: 20px;
+        word-wrap: break-word;
+      }
+
+      .container {
+        margin: 0 auto;
+        max-width: 100%;
+        width: 100%;
+        padding: 40px;
+        background: #222;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgb(57, 255, 20);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+      }
+
+      .question {
+        font-size: 2em;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+      }
+
+      .option {
+        padding: 15px;
+        background: #333;
+        border: 2px solid rgb(57, 255, 20);
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s ease;
+        font-size: 1.5em;
+      }
+
+      .option:hover {
+        background: rgb(57, 255, 20);
+        color: #111;
+      }
+
+      .score-board {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 250px;
+        height: 70px;
+        background: #222;
+        border: 3px solid rgb(57, 255, 20);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        gap: 15px;
+        box-shadow: 0 0 15px rgb(57, 255, 20);
+        z-index: 1000;
+      }
+
+      .score-board .icon {
+        font-size: 2.5em;
+        color: rgb(57, 255, 20);
+      }
+
+      .score-board span {
+        font-size: 1.5em;
+        color: rgb(57, 255, 20);
+      }
+
+      .feedback {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #222;
+        padding: 15px 30px;
+        border: 3px solid rgb(57, 255, 20);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 1.5em;
+        text-align: center;
+        display: none;
+      }
+
+      .correct-feedback {
+        background: #28a745;
+      }
+
+      .incorrect-feedback {
+        background: #dc3545;
+      }
+
+      .timer {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: #222;
+        border: 3px solid rgb(57, 255, 20);
+        border-radius: 10px;
+        padding: 15px 30px;
+        font-size: 2em;
+        color: rgb(57, 255, 20);
+        box-shadow: 0 0 15px rgb(57, 255, 20);
+        z-index: 1000;
+      }
+
+      .hearts {
+        font-size: 2em;
+        color: #ff4040;
+        margin-bottom: 20px;
+      }
+
+      .completion-message {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #28a745;
+        padding: 15px 30px;
+        border: 3px solid rgb(57, 255, 20);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 1.5em;
+        text-align: center;
+        display: none;
+      }
+
+      @media (max-width: 600px) {
+        h1 {
+          font-size: 1.8em;
+        }
+
+        .score-board {
+          width: 200px;
+        }
+
+        .timer {
+          font-size: 1.5em;
+          padding: 10px 20px;
+        }
+
+        .container {
+          padding: 20px;
+        }
+
+        .question {
+          font-size: 1.5em;
+        }
+
+        .options {
+          width: 100%;
+        }
+
+        .option {
+          font-size: 1.2em;
+        }
+
+        .feedback {
+          font-size: 1.2em;
+        }
+
+        .completion-message {
+          font-size: 1.2em;
+        }
+      }
+
+      @media (max-width: 400px) {
+        .container {
+          padding: 10px;
+        }
+
+        .question {
+          font-size: 1.2em;
+        }
+
+        .option {
+          font-size: 1em;
+        }
+
+        .feedback {
+          font-size: 1em;
+        }
+
+        .completion-message {
+          font-size: 1em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>لعبة البصمة الرقمية</h1>
+
+    <div class="hearts">
+      ❤️❤️❤️
+    </div>
+
+    <div class="score-board">
+      <div class="icon">⭐</div>
+      <span>النقاط: 0</span>
+    </div>
+
+    <div class="timer" id="timer">10</div>
+
+    <div class="container">
+      <div class="question"></div>
+      <div class="options"></div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="completion-message" id="completionMessage"></div>
+
+    <script>
+      let score = 0;
+      let timer = 10;
+      let hearts = 3;
+      let interval;
+      let currentQuestionIndex = 0;
+
+      const scoreBoard = document.querySelector('.score-board span');
+      const questionElement = document.querySelector('.question');
+      const optionsContainer = document.querySelector('.options');
+      const feedback = document.getElementById('feedback');
+      const timerElement = document.getElementById('timer');
+      const heartsElement = document.querySelector('.hearts');
+      const completionMessage = document.getElementById('completionMessage');
+
+      const questions = [
+        { question: "ما هي البصمة الرقمية؟", options: [{ text: "هي الأثر الذي تتركه أثناء استخدامك للإنترنت", correct: true }, { text: "هي بصمة إصبعك عند استخدام الهاتف", correct: false }, { text: "هي نوع من أنواع التكنولوجيا", correct: false }, { text: "لا شيء مما سبق", correct: false }] },
+        { question: "كيف يمكنك حماية البصمة الرقمية؟", options: [{ text: "مشاركة بياناتك مع الجميع", correct: false }, { text: "استخدام كلمات مرور قوية", correct: true }, { text: "فتح جميع الروابط المرسلة إليك", correct: false }, { text: "نشر جميع معلوماتك الشخصية", correct: false }] },
+        { question: "ماذا تعني كلمة 'التتبع الرقمي'؟", options: [{ text: "متابعة نشاطاتك الرقمية عبر الإنترنت", correct: true }, { text: "جمع بياناتك لتسجيل الدخول", correct: false }, { text: "التسجيل في منصات جديدة", correct: false }, { text: "حماية خصوصيتك", correct: false }] },
+        { question: "ما هو أحد مخاطر البصمة الرقمية؟", options: [{ text: "استخدامها في الإعلانات الموجهة", correct: true }, { text: "حمايتك من الفيروسات", correct: false }, { text: "تسريع الإنترنت", correct: false }, { text: "زيادة الخصوصية", correct: false }] },
+        { question: "ما هي وسيلة لحماية بياناتك الشخصية؟", options: [{ text: "استخدام VPN", correct: true }, { text: "مشاركة كلمات المرور", correct: false }, { text: "فتح جميع الرسائل المجهولة", correct: false }, { text: "تعطيل جدار الحماية", correct: false }] },
+        { question: "لماذا تُعتبر البصمة الرقمية مهمة؟", options: [{ text: "لتحديد هويتك الرقمية", correct: true }, { text: "لزيادة سرعة الإنترنت", correct: false }, { text: "لإدارة التطبيقات", correct: false }, { text: "لتقليل استخدامك للإنترنت", correct: false }] }
+      ];
+
+      function displayQuestion() {
+        const currentQuestion = questions[currentQuestionIndex];
+        questionElement.textContent = currentQuestion.question;
+        optionsContainer.innerHTML = '';
+        currentQuestion.options.forEach(option => {
+          const optionButton = document.createElement('div');
+          optionButton.classList.add('option');
+          optionButton.textContent = option.text;
+          optionButton.addEventListener('click', () => handleAnswer(option));
+          optionsContainer.appendChild(optionButton);
+        });
+      }
+
+      function handleAnswer(option) {
+        if (option.correct) {
+          score++;
+          feedback.textContent = "إجابة صحيحة!";
+          feedback.classList.add('correct-feedback');
+        } else {
+          hearts--;
+          feedback.textContent = "إجابة خاطئة!";
+          feedback.classList.add('incorrect-feedback');
+        }
+        feedback.style.display = "block";
+        setTimeout(() => {
+          feedback.style.display = "none";
+          if (hearts > 0 && currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            displayQuestion();
+          } else if (hearts === 0) {
+            gameOver();
+          } else {
+            gameOver();
+          }
+        }, 1500);
+        updateScore();
+        updateHearts();
+      }
+
+      function updateScore() {
+        scoreBoard.textContent = `النقاط: ${score}`;
+      }
+
+      function updateHearts() {
+        heartsElement.textContent = `❤️`.repeat(hearts);
+      }
+
+      function gameOver() {
+        completionMessage.textContent = `النتيجة النهائية: ${score} نقطة!`;
+        completionMessage.style.display = 'block';
+        clearInterval(interval);
+      }
+
+      function startTimer() {
+        interval = setInterval(() => {
+          if (timer === 0 || hearts === 0) {
+            clearInterval(interval);
+            gameOver();
+          } else {
+            timer--;
+            timerElement.textContent = timer;
+          }
+        }, 1000);
+      }
+
+      startTimer();
+      displayQuestion();
+    </script>
+  </body>
+</html>
